@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import { connect } from 'react-redux';
 import './App.css';
+import { addTodo, deleteTodo } from './redux/todoActions';
 
-function App() {
+function App(props) {
+  const { todo, addTodo, deleteTodo } = props;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newTodo = { id: todo.length + 1, context: e.target[0].value };
+    addTodo(newTodo);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <div className="app-header">
+        <h2>Todo List</h2>
+        <p>Total Todo : {todo.length}</p>
+        <form onSubmit={handleSubmit}>
+          <input type="text" name="todo" /> <button>Add Todo</button>
+        </form>
+        <ul>
+          {
+            todo && todo.map(t =>
+              <li key={t?.id}>
+                {t?.context}
+                <button onClick={() => deleteTodo(t.id)}>Delete</button>
+              </li>)
+          }
+        </ul>
+      </div>
+
+    </main>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return { todo: state.todo }
+}
+
+const mapDispatchToProps = {
+  addTodo: addTodo,
+  deleteTodo: deleteTodo
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
